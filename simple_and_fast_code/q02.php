@@ -32,16 +32,15 @@ for ($i = 1000; $i < 10000; ++$i) {
                 }
 
                 eval('$result = ' . $formula . ';');
-                if (!is_int($result)) {
+                if (!is_int($result)
+                    || 1000 > $result
+                    || $result != $revnum) {
                     continue;
                 }
 
-                if (sprintf('%d', $result) === $revnum) {
-                    echo "----------------------\n";
-                    echo $num . "\n";
-                    echo $formula . "\n";
-                }
-
+                echo "----------------------\n";
+                echo $num . "\n";
+                echo $formula . "\n";
             }
         }
     }
