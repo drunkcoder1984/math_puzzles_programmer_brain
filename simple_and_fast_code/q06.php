@@ -16,7 +16,7 @@ function collatzConjecture(int $initValue): bool
 {
     $value = $initValue * 3 + 1;
     while ($value != $initValue && $value != 1) {
-        $value = $value % 2 == 0 ? $value >> 1 : $value * 3 + 1;
+        $value = $value & 1 ? $value * 3 + 1 : $value >> 1;
     }
 
     return $value == $initValue;
