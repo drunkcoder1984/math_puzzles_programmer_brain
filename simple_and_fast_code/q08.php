@@ -6,63 +6,53 @@ define("FLAG_DOWN", 4);
 define("FLAG_LEFT", 8);
 define("FLAG_ALL", FLAG_UP | FLAG_RIGHT | FLAG_DOWN | FLAG_LEFT);
 
-$maxMoveNum = 12;
-$coordinates = [0 => [0 => 0]];
-$moveCoordinates = [[0, 0]];
+$flagToAxes = [
+    FLAG_UP => [0, -1, FLAG_DOWN],
+    FLAG_RIGHT => [1, 0, FLAG_LEFT],
+    FLAG_DOWN => [0, 1, FLAG_UP],
+    FLAG_LEFT => [-1, 0, FLAG_RIGHT],
+];
+
 $patternNum = 0;
-$moveNum = 0;
 $x = 0;
 $y = 0;
+$coordinates = [$x => [$y => 0]];
+$moveCoordinates = [[$x, $y]];
+$len = count($moveCoordinates);
 
 while (true) {
-    if (0 == $moveNum && FLAG_ALL == $coordinates[$x][$y]) {
+    $isMove = false;
+    foreach ($flagToAxes as $flag => [$mx, $my, $prevFlag]) {
+        if ($coordinates[$x][$y] & $flag || isset($coordinates[$x + $mx][$y + $my])) {
+            continue;
+        }
+
+        $coordinates[$x][$y] |= $flag;
+        $x += $mx;
+        $y += $my;
+        $coordinates[$x][$y] = $prevFlag;
+        $moveCoordinates[$len] = [$x, $y];
+        ++$len;
+        $isMove = true;
+
         break;
     }
 
-    switch (true) {
-        case !($coordinates[$x][$y] & FLAG_DOWN) && !isset($coordinates[$x][$y + 1]):
-            $coordinates[$x][$y] |= FLAG_DOWN;
-            $coordinates[$x][$y + 1] = FLAG_UP;
-            ++$y;
-            break;
-
-        case !($coordinates[$x][$y] & FLAG_RIGHT) && !isset($coordinates[$x + 1][$y]):
-            $coordinates[$x][$y] |= FLAG_RIGHT;
-            $coordinates[$x + 1][$y] = FLAG_LEFT;
-            ++$x;
-            break;
-
-        case !($coordinates[$x][$y] & FLAG_LEFT) && !isset($coordinates[$x - 1][$y]):
-            $coordinates[$x][$y] |= FLAG_LEFT;
-            $coordinates[$x - 1][$y] = FLAG_RIGHT;
-            --$x;
-            break;
-
-        case !($coordinates[$x][$y] & FLAG_UP) && !isset($coordinates[$x][$y - 1]):
-            $coordinates[$x][$y] |= FLAG_UP;
-            $coordinates[$x][$y - 1] = FLAG_DOWN;
-            --$y;
-            break;
-
-        default:
-            // ここは途中で進めなくなった場合
-            unset($moveCoordinates[$moveNum]);
-            unset($coordinates[$x][$y]);
-            --$moveNum;
-            [$x, $y] = $moveCoordinates[$moveNum];
-            continue 2;
+    if ($len <= MAX_MOVE_NUM && $isMove) {
+        continue;
     }
-    ++$moveNum;
 
-    if ($moveNum < MAX_MOVE_NUM) {
-        $moveCoordinates[$moveNum] = [$x, $y];
+    --$len;
+    unset($moveCoordinates[$len]);
+    unset($coordinates[$x][$y]);
+    [$x, $y] = $moveCoordinates[$len - 1];
 
-    } else {
+    if ($isMove) {
         ++$patternNum;
-        unset($moveCoordinates[$moveNum]);
-        unset($coordinates[$x][$y]);
-        --$moveNum;
-        [$x, $y] = $moveCoordinates[$moveNum];
+    }
+
+    if (1 == $len && FLAG_ALL == $coordinates[$x][$y]) {
+        break;
     }
 }
 echo $patternNum . "\n";
