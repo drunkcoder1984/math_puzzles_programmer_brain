@@ -7,18 +7,16 @@ define("FLAG_LEFT", 8);
 define("FLAG_ALL", FLAG_UP | FLAG_RIGHT | FLAG_DOWN | FLAG_LEFT);
 
 $maxMoveNum = 12;
-$coordinates = [0 => [1 => FLAG_UP]];
-$moveCoordinates = [[0, 1]];
+$coordinates = [0 => [0 => 0]];
+$moveCoordinates = [[0, 0]];
 $patternNum = 0;
 $moveNum = 0;
 $x = 0;
-$y = 1;
+$y = 0;
 
 while (true) {
-    if (0 == $moveNum) {
-        if (FLAG_ALL == $coordinates[$x][$y]) {
-            break;
-        }
+    if (0 == $moveNum && FLAG_ALL == $coordinates[$x][$y]) {
+        break;
     }
 
     switch (true) {
@@ -47,39 +45,24 @@ while (true) {
             break;
 
         default:
-            // ++$patternNum;
+            // ここは途中で進めなくなった場合
             unset($moveCoordinates[$moveNum]);
             unset($coordinates[$x][$y]);
-            if ([] === $coordinates[$x]) {
-                unset($coordinates[$x]);
-            }
             --$moveNum;
             [$x, $y] = $moveCoordinates[$moveNum];
-            if (0 > $moveNum) {
-                echo "bbbbbbbbbbb";
-                exit();
-            }
             continue 2;
     }
     ++$moveNum;
 
     if ($moveNum < MAX_MOVE_NUM) {
         $moveCoordinates[$moveNum] = [$x, $y];
+
     } else {
-        // var_dump($moveNum, $patternNum, $moveCoordinates, $coordinates);
         ++$patternNum;
         unset($moveCoordinates[$moveNum]);
         unset($coordinates[$x][$y]);
-        if ([] === $coordinates[$x]) {
-            unset($coordinates[$x]);
-        }
         --$moveNum;
-        if (0 > $moveNum) {
-            echo "aaaaaaaaaa";
-            exit();
-        }
         [$x, $y] = $moveCoordinates[$moveNum];
-        continue;
     }
 }
 echo $patternNum . "\n";
