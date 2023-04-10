@@ -17,8 +17,8 @@ function move(array $logs): int
 
     $count = 0;
     $coordinate = $logs[$len - 1];
-    foreach (MOVE_AXES as $axes) {
-        $nextCoordinate = [$coordinate[0] + $axes[0], $coordinate[1] + $axes[1]];
+    foreach (MOVE_AXES as [$mx, $my]) {
+        $nextCoordinate = [$coordinate[0] + $mx, $coordinate[1] + $my];
         if (in_array($nextCoordinate, $logs)) {
             continue;
         }
