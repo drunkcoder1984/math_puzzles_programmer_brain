@@ -1,32 +1,26 @@
 <?php
-echo findSequencePattern([0, 0], [20, 10]) . "\n";
+$man = 20;
+$woman = 10;
+$array = [];
+for ($m = 0; $m <= $man; ++$m) {
+    $array[$m] = array_fill(0, $woman + 1, 0);
+}
+$array[0][0] = 1;
 
-/**
- * @param array<int, int> $logs
- * @param array<int, int> $limits
- * @return int
- */
-function findSequencePattern(array $logs, array $limits): int
-{
-    if (0 >= array_sum($limits)) {
-        return 1;
-    }
-
-    if (array_sum($logs) && $logs[0] == $logs[1] || $limits[0] == $limits[1]) {
-        return 0;
-    }
-
-    $count = 0;
-    foreach ([0, 1] as $v) {
-        $nextLimits = $limits;
-        --$nextLimits[$v];
-        if (0 > $nextLimits[$v]) {
+for ($m = 0; $m <= $man; ++$m) {
+    for ($w = 0; $w <= $woman; ++$w) {
+        if ($m == $w || $man - $m == $woman - $w) {
             continue;
         }
 
-        $nextLogs = $logs;
-        ++$nextLogs[$v];
-        $count += findSequencePattern($nextLogs, $nextLimits);
+        if ($m > 0) {
+            $array[$m][$w] += $array[$m - 1][$w];
+        }
+
+        if ($w > 0) {
+            $array[$m][$w] += $array[$m][$w - 1];
+        }
     }
-    return $count;
 }
+
+echo $array[$man - 1][$woman] . "\n";
