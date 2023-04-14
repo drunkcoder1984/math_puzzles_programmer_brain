@@ -5,7 +5,7 @@ while (2 > count($result)) {
     $sqrt = sprintf('%.10f', bcsqrt($num, 20));
     $splitSqrts = explode('.', $sqrt);
 
-    if (!isset($result[0]) && check(0 == (int)$splitSqrts[1] ? $splitSqrts[0] : $splitSqrts[0] . $splitSqrts[1])) {
+    if (!isset($result[0]) && check($splitSqrts[0] . $splitSqrts[1])) {
         $result[0] = $num;
     }
 
