@@ -23,7 +23,7 @@ echo playShiritori($datas) . "\n";
  * @param array<lcMap: array<string, string>, countryMap: array<string, array<string, string>>> $datas
  * @param array<int, string> $used
  * @param int $maxNum
- *
+ * @return int
  */
 function playShiritori(array $datas, array $used = [], int $maxNum = 0): int
 {
