@@ -9,7 +9,7 @@ class Prime
      * @param int $n
      * @return bool
      */
-    static function isPrime(int $n): bool
+    public static function isPrime(int $n): bool
     {
         for ($i = 2; $i < $n; ++$i) {
             if (0 == $n % $i) {
@@ -25,7 +25,7 @@ class Prime
      * @param int $min
      * @return array<int, int>
      */
-    static function listPrimes(int $max, $min = 2): array
+    public static function listPrimes(int $max, $min = 2): array
     {
         $result = [];
         for ($i = $min; $i <= $max; ++$i) {
@@ -37,4 +37,3 @@ class Prime
         return $result;
     }
 }
-
