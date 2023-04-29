@@ -26,4 +26,26 @@ class ArrayUtil
 
         return $result;
     }
+
+    /**
+     * @param array<mixed, mixed> $ary
+     * @param int $num
+     * @param array<int, array<int, mixed>>
+     * @return array<int, array<int, mixed>>
+     */
+    public static function permutation(array $ary, int $num, array $permutation = []): array
+    {
+        if (0 >= $num) {
+            return [$permutation];
+        }
+
+        $result = [];
+        $cnt = count($permutation);
+        foreach ($ary as $k => $v) {
+            $nextAry = $ary;
+            unset($nextAry[$k]);
+            $result = array_merge($result, self::permutation($nextAry, $num - 1, $permutation + [$cnt => $v]));
+        }
+        return $result;
+    }
 }
