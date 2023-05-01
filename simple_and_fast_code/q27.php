@@ -1,64 +1,53 @@
 <?php
-// 向きの定数
-define('_DIRECTION_UP_', 1);
-define('_DIRECTION_DOWN_', 2);
-define('_DIRECTION_LEFT_', 3);
-define('_DIRECTION_RIGHT_', 4);
+// 進行方向 key + 1が左方向になるように配置
+define('_DIR_', [[0, 1], [-1, 0], [0, -1], [1, 0]]);
 
-// 移動座標と向き
-define('_MOVE_UP_', [0, 1, _DIRECTION_UP_]);
-define('_MOVE_DOWN_', [0, -1, _DIRECTION_DOWN_]);
-define('_MOVE_LEFT_', [-1, 0, _DIRECTION_LEFT_]);
-define('_MOVE_RIGHT_', [1, 0, _DIRECTION_RIGHT_]);
+$w = 6;
+$h = 4;
 
-$x = 6;
-$y = 4;
+$bottom = array_fill(0, $w, 0);
+$left = array_fill(0, $h, 0);
 
-$map = [];
-for ($i = 0; $i <= $y; ++$i) {
-    $map[$i] = array_fill(0, $x + 1, []);
-}
-
-echo check([0, 0], _DIRECTION_RIGHT_, $map, [$x, $y]) . PHP_EOL;
+echo check(0, 0, 3, $left, $bottom, [$w, $h]) . PHP_EOL;
 
 /**
- * @param array<0: int, 1: int> $point
- * @param int $direction
- * @param array<int, array<int, array<int, array<0: int, 1: int>>>> $map
- * @param array<0: int, 1: int> $goalPoint
+ * @param int $x
+ * @param int $y
+ * @param int $dir
+ * @param array<int, int> $left
+ * @param array<int, int> $bottom
+ * @param array<0: int, 1: int> $goal
  * @return int
  */
-function check(array $point, int $direction, array $map, array $goalPoint): int
+function check(int $x, int $y, int $dir, array $left, array $bottom, array $goal): int
 {
-    if ($point == $goalPoint) {
+    $nx = $x + _DIR_[$dir][0];
+    $ny = $y + _DIR_[$dir][1];
+    if ([$nx, $ny] == $goal) {
         return 1;
     }
 
-    // 向いてる方向に対応した移動方向と向き
-    $moves = [
-        _DIRECTION_UP_ => [_MOVE_UP_, _MOVE_LEFT_],
-        _DIRECTION_DOWN_ => [_MOVE_DOWN_, _MOVE_RIGHT_],
-        _DIRECTION_LEFT_ => [_MOVE_LEFT_, _MOVE_DOWN_],
-        _DIRECTION_RIGHT_ => [_MOVE_RIGHT_, _MOVE_UP_],
-    ];
+    // 進行不能判定用変数
+    if (in_array($dir, [0, 2])) {
+        // 上下へ進行
+        [$point, $nPoint, $path, $max] = [$y, $ny, 1 << $x, $goal[1]];
+        $line = &$left;
+    } else {
+        // 左右へ進行
+        [$point, $nPoint, $path, $max] = [$x, $nx, 1 << $y, $goal[0]];
+        $line = &$bottom;
+    }
 
+    $pos = min($point, $nPoint);
+    if (0 > $pos || $nPoint > $max  // 行き止まり
+        || 0 < ($line[$pos] & $path)) { // 一度通った
+        return 0;
+    }
+
+    $line[$pos] |= $path;
     $cnt = 0;
-    [$x, $y] = $point;
-    foreach ($moves[$direction] as [$mx, $my, $nDirection]) {
-        $nx = $x + $mx;
-        $ny = $y + $my;
-        $nPoint = [$nx, $ny];
-
-        // 移動できるか判定
-        if (!isset($map[$ny][$nx]) || in_array($point, $map[$ny][$nx]) || in_array($nPoint, $map[$y][$x])) {
-            continue;
-        }
-
-        // 移動済みを記録
-        $nMap = $map;
-        $nMap[$ny][$nx][] = $point;
-        $nMap[$y][$x][] = $nPoint;
-        $cnt += check($nPoint, $nDirection, $nMap, $goalPoint);
+    foreach ([$dir, ($dir + 1) % count(_DIR_)] as $nDir) {
+        $cnt += check($nx, $ny, $nDir, $left, $bottom, $goal);
     }
 
     return $cnt;
