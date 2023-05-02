@@ -15,10 +15,11 @@ function check(array $clubs, int $max): int
 {
     $memo = [];
     foreach ($clubs as [$area, $num]) {
+        ksort($memo);
         foreach ($memo as $k => $v) {
             $nNum = $num + $k;
             if ($nNum > $max) {
-                continue;
+                break;
             }
             $nArea = $area + $v;
             $memo[$nNum] = isset($memo[$nNum]) ? max($memo[$nNum], $nArea) : $nArea;
