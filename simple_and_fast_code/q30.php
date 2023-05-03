@@ -1,13 +1,13 @@
 <?php
 $num = 20;
-echo check($num) . PHP_EOL;
+echo setTap($num) . PHP_EOL;
 
 /**
  * @param int $n
  * @param array<int, int> $memo
  * @return int
  */
-function check(int $n, array &$memo = [1 => 1]): int
+function setTap(int $n, array &$memo = [1 => 1]): int
 {
     if (isset($memo[$n])) {
         return $memo[$n];
@@ -43,9 +43,9 @@ function check(int $n, array &$memo = [1 => 1]): int
 function calc(int $n, int $i, int $j, array &$memo): int
 {
     $check = $n - ($i + $j);
-    $iv = check($i, $memo);
-    $cv = check($check, $memo);
-    $jv = 0 == $j ? 1 : check($j, $memo);
+    $iv = setTap($i, $memo);
+    $cv = setTap($check, $memo);
+    $jv = 0 == $j ? 1 : setTap($j, $memo);
 
     if ($check == $i && $i == $j) {
         return $iv * ($iv + 1) * ($iv + 2) / 6;
