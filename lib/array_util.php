@@ -48,4 +48,37 @@ class ArrayUtil
         }
         return $result;
     }
+
+    /**
+     * @param array<mixed, mixed> $ary1
+     * @param array<mixed, mixed> $ary2
+     * @return array<int, array<int, mixed>>
+     */
+    public static function product(array $ary1, array $ary2): array
+    {
+        $result = [];
+        foreach ($ary1 as $v1) {
+            foreach ($ary2 as $v2) {
+                $result[] = [$v1, $v2];
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * @param array<mixed, mixed> $ary
+     * @return array<int, mixed>
+     */
+    public static function flatten(array $ary): array
+    {
+        $result = [];
+        foreach ($ary as $v) {
+            if (is_array($v)) {
+                $result = array_merge($result, self::flatten($v));
+            } else {
+                $result[] = $v;
+            }
+        }
+        return $result;
+    }
 }
