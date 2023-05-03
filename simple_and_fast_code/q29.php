@@ -42,14 +42,11 @@ function calc(int $n, array &$memo = [1 => [1]]): array
             }
             $r[] = $n - $pos;
             sort($r);
-            $cut[json_encode($r)] = 1;  // 同じ配列をまとめる
+            $cut[json_encode($r)] = $r;  // 同じ配列をまとめる
         }
 
         // 区切った位置で再帰的に抵抗を設定
-        $keys = array_map(
-            fn($k) => array_map(fn($v) => calc($v), json_decode($k, true)),
-            array_keys($cut)
-        );
+        $keys = array_map(fn($v) => array_map(fn($vv) => calc($vv), $v), $cut);
 
         // 抵抗を計算
         $products = array_map(fn($k) => product($k), $keys);
