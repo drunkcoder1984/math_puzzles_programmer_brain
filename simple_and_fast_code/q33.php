@@ -14,6 +14,7 @@ echo $cnt . PHP_EOL;
 function check(array $list, int $len = 1): int
 {
     $str = mb_substr($list[0], 0, $len);
+    // [調査対象, 調査対象から外れたもの]
     $nextList = [[], []];
     foreach ($list as $v) {
         $k = mb_substr($v, 0, $len) == $str ? 0 : 1;
@@ -23,13 +24,16 @@ function check(array $list, int $len = 1): int
     $cnt = 0;
     foreach ($nextList as $k => $v) {
         switch (count($v)) {
+            // 対象がユニークになった場合
             case 1:
                 $cnt += $len;
                 break;
 
+            // 対象がない場合
             case 0:
                 break;
 
+            // 対象が複数の場合
             default:
                 $cnt += check($v, $k == 0 ? $len + 1 : $len);
                 break;
