@@ -2,11 +2,6 @@
 require_once(dirname(__FILE__) . "/../lib/array_util.php");
 
 define("_BOARD_LEN_", 9);
-define("_BORDER_", -1);
-define("_NONE_", 0);
-define("_HISYA_", 1);
-define("_KAKU_", 2);
-define("_MOVE_", 9);
 define("_PLAY_POSES_", ArrayUtil::product(range(1, _BOARD_LEN_), range(1, _BOARD_LEN_)));
 
 echo check() . PHP_EOL;
@@ -16,9 +11,9 @@ echo check() . PHP_EOL;
  */
 function check(): int
 {
-    $board = array_fill(0, (_BOARD_LEN_ + 2) ** 2, _BORDER_);
+    $board = array_fill(0, (_BOARD_LEN_ + 2) ** 2, true);
     foreach (_PLAY_POSES_ as $pos) {
-        $board[calcPosKey($pos)] = _NONE_;
+        $board[calcPosKey($pos)] = false;
     }
 
     $cnt = 0;
@@ -47,20 +42,20 @@ function countMove(array $board, array $kPos, array $hPos): int
     }
 
     // 飛車角の設定
-    $board[calcPosKey($hPos)] = _HISYA_;
-    $board[calcPosKey($kPos)] = _KAKU_;
+    $board[calcPosKey($hPos)] = $board[calcPosKey($kPos)] = true;
+    $check = [];
     foreach ([
         [$hPos, [[1, 0], [-1, 0], [0, 1], [0, -1]]],
         [$kPos, [[1, 1], [-1, 1], [1, -1], [-1, -1]]],
     ] as [$pos, $moves]) {
         foreach ($moves as $move) {
             // 動ける位置の設定
-            move($board, $pos, $move);
+            move($board, $pos, $move, $check);
         }
     }
 
     // 動ける位置数を取得
-    return array_count_values($board)[_MOVE_];
+    return count($check);
 }
 
 /**
@@ -76,16 +71,17 @@ function calcPosKey(array $pos): int
  * @param array<int, int> $board
  * @param array<0: int, 1: int> $pos
  * @param array<0: int, 1: int> $move
+ * @param array<int, int> $check
  * @return int
  */
-function move(array &$board, array $pos, array $move)
+function move(array $board, array $pos, array $move, array &$check)
 {
     $pos = [$pos[0] + $move[0], $pos[1] + $move[1]];
     $k = calcPosKey($pos);
-    if (!in_array($board[$k], [_NONE_, _MOVE_])) {
+    if ($board[$k]) {
         return;
     }
 
-    $board[$k] = _MOVE_;
-    move($board, $pos, $move);
+    $check[$k] = 1;
+    move($board, $pos, $move, $check);
 }
