@@ -14,14 +14,17 @@ echo check([0, 0], [_LEN_, _LEN_]) . PHP_EOL;
  */
 function check(array $mPos, array $wPos, int $meet = 0): int
 {
-    if (_LEN_ < $mPos[0] || _LEN_ < $mPos[1] || 0 > $wPos[0] || 0 > $wPos[1]) {
+    if (_LEN_ < max($mPos) || 0 > min($wPos)) {
         return 0;
     } elseif ([_LEN_, _LEN_] === $mPos) {
         return 2 <= $meet ? 1 : 0;
     }
 
-    $meet += $mPos[0] == $wPos[0] ? 1 : 0 ;
-    $meet += $mPos[1] == $wPos[1] ? 1 : 0 ;
+    foreach ($mPos as $k => $v) {
+        if ($v == $wPos[$k]) {
+            ++$meet;
+        }
+    }
 
     $cnt = 0;
     foreach (_MOVES_ as [$mMove, $wMove]) {
